@@ -1,4 +1,5 @@
 import datetime
+import time
 
 # This is to let you import without being in the same directory
 # by inserting the location of python-twitter to the Python path at runtime
@@ -16,44 +17,6 @@ access_token_secret = "qP2GTWoTu446o5wM2BB8KXkajvrQ74dBb9vRlcPEaHKH1"
 
 api = twitter.Api(api_key, api_secret, access_token_key, access_token_secret)
 
-#returns list of all tweets 
-def getStockTweets(stockName):
-    results = api.GetSearch("$nvda", count=100, result_type="recent", lang='en', since="2017-03-11")
-
-    stockTweets = [tweet.text.encode('utf-8') for tweet in results]
-    datestamps = [tweet.created_at for tweet in results]
-    timestamps = []
-    #get only the times Hour:Min:Sec from the dates
-    for time in datestamps:
-        colonIndex = time.find(':')
-        time = time[colonIndex-2:colonIndex+6]
-        timestamps.append(time)
-
-#prints a bunch of info regarding my account
-#=====================================
-#print(api.VerifyCredentials())
-#print('\n')
-
-#Gets all of my tweets
-#=====================================
-#statuses=api.GetUserTimeline(screen_name='soccerplayermc')
-#print([s.text for s in statuses])
-
-#Gets all of the people that I follow (I think)
-#=====================================
-#users = api.GetFriends()
-#print([u.name for u in users])
-
-#this tweets from my account
-#======================================
-#status = api.PostUpdate('Testing python-twitter module')
-#print(status.text)
-
-#default returns up to 15 tweets but can go up to 100 by passing count=100
-#use all times 'since' and 'until' to go through entire day to get all tweets
-#if there are more than 100?#
-#======================================
-
 """pseudocode
 
     find id of last tweet from previous night or first tweet of day (previous night probably
@@ -65,21 +28,71 @@ def getStockTweets(stockName):
 
 """
 
-results = api.GetSearch("$nvda", count=100, result_type="recent", lang='en', include_entities=False)
-#print([r.text+'\n\n\n' for r in results])
+#returns list of all tweets 
+def getStockTweets(stockName):
+    stockName = "$"+stockName
+    now = datetime.datetime.now()
+    today = str(now.year) + "-" + str(now.month) + "-" + str(now.day)
+    yesterday = now - datetime.timedelta(days=1)
+    yesterday = str(yesterday.year) + "-" + str(yesterday.month) + "-" + str(yesterday.day)
 
-for r in results:
-    print r.text.encode('utf-8')
-    print r.created_at
-    print '\n'
+    yesterdaysTweetID = api.GetSearch(stockName, count=1, result_type="recent", lang='en', since=yesterday, until=today)[0].id
 
-stockTweets = [tweet.text.encode('utf-8') for tweet in results]
-datestamps = [tweet.created_at for tweet in results]
+    lastTweetID = yesterdaysTweetID
 
-timestamps = []
-for time in datestamps:
-    colonIndex = time.find(':')
-    time = time[colonIndex-2:colonIndex+6]
-    timestamps.append(time)
+    firstTweets = api.GetSearch(stockName, count=100, lang='en', since_id=lastTweetID)
+    lastTweetID = firstTweets[-1].id
 
+    
+    nextTweets = []
+    totalTweets = []
+    prevLastTweetID = -1
+    while(prevLastTweetID != lastTweetID):
+        prevLastTweetID = lastTweetID
+        nextTweets = api.GetSearch(stockName, count=100, lang='en', since_id=lastTweetID)
+        #last id of the 100 previous 100 tweets
+        if(len(nextTweets)>0):
+            lastTweetID = nextTweets[-1].id
+        #add all tweets to one list
+        totalTweets += nextTweets
+        #give Twitter servers a break
+        time.sleep(1)
+    
+
+    """
+    stockTweets = [tweet.text.encode('utf-8') for tweet in totalTweets]
+    datestamps = [tweet.created_at for tweet in totalTweets]
+    timestamps = []
+    #get only the times Hour:Min:Sec from the dates
+    for time in datestamps:
+        colonIndex = time.find(':')
+        time = time[colonIndex-2:colonIndex+6]
+        timestamps.append(time)
+    """
+
+    positiveWords = ["good", "buy", "great", "bull", "up"]
+    negativeWords = ["bad", "sell", "terrible", "bear", "down"]
+    positive = 0
+    negative = 0
+
+    i=1
+    for tweet in totalTweets:
+        for word in positiveWords:
+            if word in tweet.text.encode('utf-8'):
+                positive += 1
+        for word in negativeWords:
+            if word in tweet.text.encode('utf-8'):
+                negative += 1
+
+        print i, tweet.text.encode('utf-8')
+        print tweet.created_at
+        i+=1
+
+    print "POSITIVE TWEETS: " + str(positive)
+    print "NEGATIVE TWEETS: " + str(negative)
+
+def main():
+    getStockTweets("nvda")
+
+main()
 
