@@ -96,7 +96,8 @@ def getSentiments(totalTweets):
     print "NEGATIVE TWEETS: " + str(negative)
    
 def main():
-    totalTweets = getStockTweets("nvda")
+    stockName = raw_input("Please enter the ticker name for the desired stock (Example: For Nvidia type NVDA): ") 
+    totalTweets = getStockTweets(stockName)
     getSentiments(totalTweets)
 
 main()
