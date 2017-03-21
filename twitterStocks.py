@@ -28,6 +28,19 @@ api = twitter.Api(api_key, api_secret, access_token_key, access_token_secret)
 
 """
 
+"""GETTING TIMES
+
+    stockTweets = [tweet.text.encode('utf-8') for tweet in totalTweets]
+    datestamps = [tweet.created_at for tweet in totalTweets]
+    timestamps = []
+    #get only the times Hour:Min:Sec from the dates
+    for time in datestamps:
+        colonIndex = time.find(':')
+        time = time[colonIndex-2:colonIndex+6]
+        timestamps.append(time)
+"""
+
+
 #returns list of all tweets 
 def getStockTweets(stockName):
     stockName = "$"+stockName
@@ -57,19 +70,9 @@ def getStockTweets(stockName):
         totalTweets += nextTweets
         #give Twitter servers a break
         time.sleep(1)
+    return totalTweets
     
-
-    """
-    stockTweets = [tweet.text.encode('utf-8') for tweet in totalTweets]
-    datestamps = [tweet.created_at for tweet in totalTweets]
-    timestamps = []
-    #get only the times Hour:Min:Sec from the dates
-    for time in datestamps:
-        colonIndex = time.find(':')
-        time = time[colonIndex-2:colonIndex+6]
-        timestamps.append(time)
-    """
-
+def getSentiments(totalTweets):
     positiveWords = ["good", "buy", "great", "bull", "up"]
     negativeWords = ["bad", "sell", "terrible", "bear", "down"]
     positive = 0
@@ -80,19 +83,21 @@ def getStockTweets(stockName):
         for word in positiveWords:
             if word in tweet.text.encode('utf-8'):
                 positive += 1
+                print i, tweet.text.encode('utf-8')
+                print tweet.created_at
         for word in negativeWords:
             if word in tweet.text.encode('utf-8'):
                 negative += 1
-
-        print i, tweet.text.encode('utf-8')
-        print tweet.created_at
+                print i, tweet.text.encode('utf-8')
+                print tweet.created_at
         i+=1
 
     print "POSITIVE TWEETS: " + str(positive)
     print "NEGATIVE TWEETS: " + str(negative)
-
+   
 def main():
-    getStockTweets("nvda")
+    totalTweets = getStockTweets("nvda")
+    getSentiments(totalTweets)
 
 main()
 
