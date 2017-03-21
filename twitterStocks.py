@@ -17,18 +17,20 @@ access_token_secret = "qP2GTWoTu446o5wM2BB8KXkajvrQ74dBb9vRlcPEaHKH1"
 
 api = twitter.Api(api_key, api_secret, access_token_key, access_token_secret)
 
-"""pseudocode
+"""
+PSEUDOCODE
 
     find id of last tweet from previous night or first tweet of day (previous night probably
     easier with the getsearch parameters
 
-    getSearch 100 tweets for nvda from that tweet id 
+    getSearch 100 tweets for stockname from that tweet id 
 
     Keep searching from the last id of the 100 tweets you just got until the day is over
 
 """
 
-"""GETTING TIMES
+"""
+GETTING TIMESTAMPS
 
     stockTweets = [tweet.text.encode('utf-8') for tweet in totalTweets]
     datestamps = [tweet.created_at for tweet in totalTweets]
