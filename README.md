@@ -1,7 +1,7 @@
 # twitterStocks
 Scrape twitter for tweets relating to a public stock in order to gauge public opinion on it to predict upward or downward trends in stock price
 
-## Tools
+## Tools:
 Uses Python 2.7, python-twitter API (https://github.com/bear/python-twitter)
 
 
