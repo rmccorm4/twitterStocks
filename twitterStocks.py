@@ -5,7 +5,7 @@ import time
 # by inserting the location of python-twitter to the Python path at runtime
 import sys
 #need to change path to where you locally downloaded python-twitter from github
-sys.path.insert(0, '/home/ryan/codeFun/twitterStocks/python-twitter')
+sys.path.insert(0, '/home/ryan/projects/twitterStocks/python-twitter')
 
 # import this from python-twitter which was added to the Python path above
 import twitter
