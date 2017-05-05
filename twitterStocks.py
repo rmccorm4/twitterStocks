@@ -30,7 +30,7 @@ PSEUDOCODE
 """
 
 """
-GETTING TIMESTAMPS
+#GETTING TIMESTAMPS
 
     stockTweets = [tweet.text.encode('utf-8') for tweet in totalTweets]
     datestamps = [tweet.created_at for tweet in totalTweets]
