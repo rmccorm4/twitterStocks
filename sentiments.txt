@@ -1,6 +1,0 @@
-This file contains words that are searched for in order to be associated with positive or negative
-
-GOOD
-
-
-BAD
